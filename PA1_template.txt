@@ -1,16 +1,12 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
 This file describes the various steps involved in preparing the report required
 for Peer Assignment #1 of Reprodcible Analysis course.
 
 The below libraries are needed for this assignment:
 
-```{r results = "hide", message=FALSE}
+
+```r
 library(dplyr)
 library(ggplot2)
 ```
@@ -18,7 +14,8 @@ library(ggplot2)
 ## Loading and preprocessing the data
 Reading the activity data and converting date values to "date" format
 
-```{r}
+
+```r
 activity = read.csv(unzip("activity.zip"), na.strings = "NA")
 activity$date = as.Date(activity$date)
 ```
@@ -28,19 +25,21 @@ activity$date = as.Date(activity$date)
 Aggregating the number of steps taken at the day level and calculating the mean.
 This data contains NA values too.
 
-```{r}
+
+```r
 totalStepsDayWise = group_by(activity, date) %>%
       summarise(totalSteps = sum(steps))
 meanSteps = mean(totalStepsDayWise$totalSteps, na.rm = T)
 ```
 
-Mean steps per day: `r as.character(round(meanSteps, 0))`
+Mean steps per day: 10766
 
 ## What is the average daily activity pattern?
 
 Showing average number of steps taken by time interval.
 
-```{r}
+
+```r
 meanStepsMinWise = group_by(activity, interval) %>%
       summarise(meanSteps = mean(steps, na.rm = T))
 
@@ -50,15 +49,18 @@ plot(x = meanStepsMinWise$interval, y = meanStepsMinWise$meanSteps,
      main = "Average number of steps taken by 5-minute intervals")
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
+
 Maximum number of steps observed at this time: 
-`r meanStepsMinWise[meanStepsMinWise$meanSteps == max(meanStepsMinWise$meanSteps), 1]`
+835
 
 ## Imputing missing values
 
 Each missing value to be replaced with the median of total steps 
 taken in that interval across days
 
-```{r}
+
+```r
 medianStepsMinWise = group_by(activity, interval) %>%
       summarise(meanSteps = median(steps, na.rm = T))
 activityCompleted = activity
@@ -77,7 +79,8 @@ for (i in 1:nrow(activityCompleted)) {
 
 Creating a function to identify rows pertaining to weekdays/ weekends
 
-```{r}
+
+```r
 getDayType = function (dayVal) {
       dayType = "weekday"
       wkEnd = c("Saturday", "Sunday")
@@ -94,7 +97,8 @@ activityDayType$dayType = as.factor(activityDayType$dayType)
 ```
 Plotting average steps by interval by weekday/ weekend
 
-```{r}
+
+```r
 activityDayTypeAvg = group_by(activityDayType, interval, dayType) %>%
       summarise(avgSteps = mean(steps, na.rm = T))
 
@@ -104,3 +108,5 @@ ggplot(activityDayTypeAvg, aes(x = interval, y = avgSteps)) +
       labs(x = "Interval in minutes", y = "Average steps", 
            title = "Average steps by weekday/ weekend")
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
