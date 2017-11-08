@@ -30,9 +30,17 @@ This data contains NA values too.
 totalStepsDayWise = group_by(activity, date) %>%
       summarise(totalSteps = sum(steps))
 meanSteps = mean(totalStepsDayWise$totalSteps, na.rm = T)
+medianSteps = median(totalStepsDayWise$totalSteps, na.rm = T)
+
+hist(totalStepsDayWise$totalSteps, col = "blue", xlab = "Total # of Steps",
+     main = "Distribution of Total Steps")
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
+
 Mean steps per day: 10766
+
+Median steps per day: 10765
 
 ## What is the average daily activity pattern?
 
@@ -73,11 +81,25 @@ for (i in 1:nrow(activityCompleted)) {
                   medianStepsMinWise[medianStepsMinWise$interval == activityCompleted[i, 3], 2]
       }
 }
+
+# Aggregating imputed data by day
+totalStepsDayWiseCompleted = group_by(activityCompleted, date) %>%
+      summarise(totalSteps = sum(steps))
+
+# Graphs showing differences between the original and imputed dataset
+par(mfrow = c(1, 2))
+hist(totalStepsDayWise$totalSteps, col = "blue", xlab = "Total # of Steps",
+     main = "Distribution of Total Steps")
+hist(totalStepsDayWiseCompleted$totalSteps, col = "blue", xlab = "Total # of Steps",
+     main = "Distribution of Total Steps (Imputed)")
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
-Creating a function to identify rows pertaining to weekdays/ weekends
+Creating a function to identify rows pertaining to weekdays/ weekends. Imputed
+data has been used for this analysis.
 
 
 ```r
